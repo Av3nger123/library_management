@@ -27,7 +27,6 @@ class AuditDAL:
 
     async def create_audit(self,audit:dict):
         global audit_seq
-        print(audit)
         audit_record = Audit(id=audit_seq,**audit)
         audit_records[audit_record.id] = audit_record   
         audit_seq = audit_seq + 1

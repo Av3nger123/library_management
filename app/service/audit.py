@@ -35,7 +35,6 @@ class AuditService:
             return f"Not allowed as the limit {BOOK_LIMIT} reached"
         
         if book_items := await self.book_item_dal.get_book_items_for_book(book.id):
-            print(book_items)
             filtered = [item for item in book_items if item.status == BookStatus.AVAILABLE]
         if len(filtered) > 0:
             item = filtered[0]
