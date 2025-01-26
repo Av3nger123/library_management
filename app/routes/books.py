@@ -9,7 +9,7 @@ from app.service.books import BookService
 router = APIRouter()
 
 def get_book_service():
-    return BookService(AuditDAL(),BookDAL(),BookItemDAL())
+    return BookService(BookDAL(),BookItemDAL())
 
 
 @router.get("/{id}/items", response_model=None)

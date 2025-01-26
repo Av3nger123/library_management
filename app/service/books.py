@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass
 from app.dal.audit import AuditDAL
 from app.dal.book_item import BookItemDAL
@@ -10,7 +9,6 @@ from app.models.audits import Audit
 @dataclass
 class BookService:
     
-    audit_dal:AuditDAL
     book_dal:BookDAL
     book_item_dal:BookItemDAL
     
@@ -53,12 +51,24 @@ class BookService:
         return f"No Book found for this book_id: {payload['book_id']}"
         
     async def update_book_item(self,payload):
-        if book_item := await self.book_item_dal.change_status(**payload):
-            if payload['status'] == 'lost':
-                if audits := await self.audit_dal.get_audits_by_filters(book_item_id=book_item.id, status="assigned"):
-                    audit = audits[0]
-                    audit.condition = "lost"
-                    await self.audit_dal.update_audit(audit.model_dump())
-            return book_item
-        return f"No Book item found for this id: {payload['id']}"
+        book_item = await self.book_item_dal.get_book_items(payload['id'])
+        if not book_item:
+            return f"No Book item found for this id: {payload['id']}"
         
+        # DOnt allow invalid operation fo data consistency
+        status = payload['status']
+        current_status = book_item.status
+        
+        invalid = False
+        
+        if status == 'lost':
+            if audits := await self.audit_dal.get_audits_by_filters(book_item_id=book_item.id, status="assigned"):
+                invalid = True
+        elif current_status != "damaged" or status != 'available':
+            invalid = True
+        
+        if invalid:
+            return "Invalid Operation"
+        book_item = await self.book_item_dal.change_status(**payload)
+        return book_item
+

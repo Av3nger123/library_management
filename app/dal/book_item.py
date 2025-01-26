@@ -28,6 +28,10 @@ class BookItemDAL:
         if book_id in book_items_map:
             return [book_item_records[x] for x in book_items_map[book_id]]
         return None
+    async def get_book_items(self,id:int):
+        if id in book_item_records:
+            return book_item_records[id]
+        return None
     
     async def change_status(self,id:int,status:str):
         if book_item := book_item_records[id]:
