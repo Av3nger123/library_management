@@ -8,7 +8,6 @@ BOOK_LIMIT = 5
 status_map = {
     "good": BookStatus.AVAILABLE,
     "bad": BookStatus.DAMAGED,
-    "lost": BookStatus.LOST
 }
 
 @dataclass
@@ -44,12 +43,12 @@ class AuditService:
             return "No books available"
     
     async def return_book(self,payload):
-        audit_record =  await self.audit_dal.update_audit(payload)
+        audit_record =  await self.audit_dal.update_audit({**payload,"status":"returned"})
         if not audit_record:
             return "No Audit record found"
         await self.book_item_dal.change_status(audit_record.book_item_id,status_map.get(payload.get("condition"),BookStatus.AVAILABLE))
         return audit_record
 
     
-    async def get_audits(self,book_id,user_id):
-        return await self.audit_dal.get_audits_by_filters(book_id=book_id,user_id=user_id)
+    async def get_audits(self,book_id=None,user_id=None,book_item_id=None,status=None):
+        return await self.audit_dal.get_audits_by_filters(book_id=book_id,user_id=user_id,book_item_id=book_item_id,status=status)

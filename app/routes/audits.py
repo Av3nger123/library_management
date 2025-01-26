@@ -23,5 +23,5 @@ async def return_book(request:ReturnBook,audit_service:AuditService = Depends(ge
 
 
 @router.get("")
-async def return_book(book_id:int=None,user_id:int=None,audit_service:AuditService = Depends(get_audit_service)):
+async def get_audits(book_item_id:int,status:str,book_id:int=None,user_id:int=None,audit_service:AuditService = Depends(get_audit_service)):
     return await audit_service.get_audits(book_id,user_id)
