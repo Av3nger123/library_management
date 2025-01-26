@@ -62,10 +62,7 @@ class BookService:
         print(status,current_status)
         invalid = False
         
-        if status in ['lost', "damaged"]:
-            if audits := await self.audit_dal.get_audits_by_filters(book_item_id=book_item.id, status="assigned"):
-                invalid = True
-        elif status == 'available':
+        if status in ['lost', "damaged", "available"]:
             if audits := await self.audit_dal.get_audits_by_filters(book_item_id=book_item.id, status="assigned"):
                 invalid = True
             if audits := await self.audit_dal.get_audits_by_filters(book_item_id=book_item.id, status="lost"):

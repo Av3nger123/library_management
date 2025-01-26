@@ -45,6 +45,8 @@ class AuditService:
     async def return_book(self,payload):
         
         audit = await self.audit_dal.get_audit(payload['id'])
+        if not audit:
+            return "Audit not found"
         if audit.status == "returned":
             return "Invalid Operation, Book item is already returned"
         audit_record =  await self.audit_dal.update_audit(payload)
