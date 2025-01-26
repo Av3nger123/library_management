@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, root_validator
 from typing import Optional  # Import Optional
 
 class UserBase(BaseModel):
@@ -21,6 +21,12 @@ class UserUpdate(BaseModel):
     name: Optional[str] = None 
     email: Optional[str] = None 
     is_blocked: Optional[bool] = None
+
+    @root_validator(pre=True)
+    def check_at_least_one_field(cls, values):
+        if not any(values.values()):
+            raise ValueError("At least one field (name, email, is_blocked) must be provided")
+        return values
 
 
 
