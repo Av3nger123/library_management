@@ -32,7 +32,10 @@ class BookService:
         return book
 
 
-    async def update_book(self,book_id,payload):
+    async def update_book(self,book_id,payload,override=False):
+        book_items = await self.book_item_dal.get_book_items_for_book(book_id)
+        if book_items and not override:
+            return "There are book items for this book, pass override in query as true if you want to change the book attributes if you wish to continue"
         if book_record := await self.book_dal.update_book(book_id,payload):
             return book_record
         return f"No Book found for this book_id: {book_id}"
@@ -48,7 +51,7 @@ class BookService:
         return f"No Book found for this book_id: {payload['book_id']}"
         
     async def update_book_item(self,payload):
-        if book := await self.book_dal.get_book(payload['book_id']):
-            return await self.book_item_dal.change_status(**payload)
-        return f"No Book found for this book_id: {payload['book_id']}"
+        if book_item := await self.book_item_dal.change_status(**payload):
+            return book_item
+        return f"No Book item found for this id: {payload['id']}"
         

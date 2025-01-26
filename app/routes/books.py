@@ -38,7 +38,7 @@ async def create_book(request: BookCreate, book_service: BookService = Depends(g
     return await book_service.create_book(request.model_dump())
 
 @router.patch("/{id}", response_model=None)
-async def update_book(id: int, book: BookUpdate, book_service: BookService = Depends(get_book_service)):
-    return await book_service.update_book(id, book.model_dump())
+async def update_book(id: int,override:bool, book: BookUpdate, book_service: BookService = Depends(get_book_service)):
+    return await book_service.update_book(id, book.model_dump(),override)
 
 

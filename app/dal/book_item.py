@@ -29,10 +29,10 @@ class BookItemDAL:
             return [book_item_records[x] for x in book_items_map[book_id]]
         return None
     
-    async def change_status(self,book_item_id:int,status:str):
-        if book_item := book_item_records[book_item_id]:
+    async def change_status(self,id:int,status:str):
+        if book_item := book_item_records[id]:
             book_item.status = BookStatus(status)
             book_item.updated_at = datetime.now()
-            book_item_records[book_item_id] = book_item
+            book_item_records[id] = book_item
             return book_item
         return None
