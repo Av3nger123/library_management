@@ -1,37 +1,33 @@
-
+from datetime import datetime
 from typing import Dict
-from app.models.schema import Book
+from app.models.books import Book
 
-
-book_records:Dict[int, Book]= {}
+book_records: Dict[int, Book] = {}
 book_seq = 1
 
 class BookDAL:
-    
-    async def search_books(self, q:str):
-        found_books = []
-        for book in book_records.values():
-            if book.name.startswith(q):
-                found_books.append(book)
-        return found_books
-    
-    async def get_book(self, book_id):
-        if book_id not in book_records:
-            return None
-        return book_records[book_id]
-
-
+        
     async def get_books(self):
         return list(book_records.values())
-      
-    async def create_book(self,book:Book):
+    
+    async def get_book(self, book_id):
+        if book_id in book_records:
+            return book_records[book_id]
+        return None
+        
+    async def create_book(self, book: dict):
         global book_seq
-        book.id = book_seq 
-        book_records[book.id] = book   
+        book_record = Book(id=book_seq, **book)
+        book_records[book_record.id] = book_record   
         book_seq = book_seq + 1
-        return book
+        return book_record
     
-    async def update_book(self,book:Book):
-        book_records[book.id] = book   
-        return book
-    
+    async def update_book(self, book_id, book: dict):
+        if book_record := book_records.get(book_id):
+            for key, value in book.items():
+                if value is not None:
+                    setattr(book_record, key, value)
+            setattr(book_record, "updated_at", datetime.now())
+            book_records[book_id] = book_record  
+            return book_record 
+        return None

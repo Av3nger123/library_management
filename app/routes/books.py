@@ -1,35 +1,36 @@
 from fastapi import APIRouter, Depends
 
-from app.dal.audit import AuditDAL
+from app.dal.book_item import BookItemDAL
 from app.dal.books import BookDAL
-from app.dal.user import UserDAL
+from app.models.books import BookCreate, BookItemCreate, BookUpdate
 from app.service.books import BookService
 
-router = APIRouter(prefix="/books")
+router = APIRouter()
 
 def get_book_service():
-    return BookService(UserDAL(),BookDAL(),AuditDAL())
+    return BookService(BookDAL(),BookItemDAL())
 
-@router.get("/")
-async def get_books(book_service:BookService= Depends(get_book_service)):
+@router.get("/", response_model=None)
+async def get_books(book_service: BookService = Depends(get_book_service)):
     return await book_service.get_books()
 
-@router.get("/users")
-async def assign_books(book_service:BookService= Depends(get_book_service)):
-    return await book_service.audit_records()
-
-@router.get("/{id}")
-async def get_book(id:int,book_service:BookService= Depends(get_book_service)):
+@router.get("/{id}", response_model=None)
+async def get_book(id: int, book_service: BookService = Depends(get_book_service)):
     return await book_service.get_book(id)
 
-@router.post("/")
-async def create_books(payload:dict, book_service:BookService= Depends(get_book_service)):
-    return await book_service.create_books(payload)
+@router.post("/", response_model=None)
+async def create_books(request: BookCreate, book_service: BookService = Depends(get_book_service)):
+    return await book_service.create_book(request.model_dump())
 
-@router.patch("/{id}")
-async def update_books(id:int,payload:dict,  book_service:BookService= Depends(get_book_service)):
-    return await book_service.update_book(id,payload) 
+@router.patch("/{id}", response_model=None)
+async def update_books(id: int, book: BookUpdate, book_service: BookService = Depends(get_book_service)):
+    return await book_service.update_book(id, book.model_dump())
 
-@router.post("/users")
-async def assign_books(payload:dict, book_service:BookService= Depends(get_book_service)):
-    return await book_service.assign_books(payload)
+@router.get("/{id}/items", response_model=None)
+async def get_book_items(id:int,book_service: BookService = Depends(get_book_service)):
+    return await book_service.get_book_items_for_book(id)
+
+@router.post("/items", response_model=None)
+async def create_book_items(request: BookItemCreate, book_service: BookService = Depends(get_book_service)):
+    return await book_service.create_book_item(request.model_dump())
+
