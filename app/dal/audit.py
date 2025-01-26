@@ -11,7 +11,12 @@ class AuditDAL:
 
     async def get_audits(self):
         return audit_records
-
+    
+    async def get_audit(self,id:int):
+        if id in audit_records:
+            return audit_records[id]
+        return None
+    
     async def get_audits_by_filters(self,book_id=None, book_item_id=None, user_id=None, status=None):
         # Unoptimized
         final = list(audit_records.values())

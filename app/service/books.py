@@ -2,13 +2,14 @@ from dataclasses import dataclass
 from app.dal.audit import AuditDAL
 from app.dal.book_item import BookItemDAL
 from app.dal.books import BookDAL
-from app.models.books import BookItemCreate
+from app.models.books import BookItemCreate, BookStatus
 from app.models.audits import Audit
 
 
 @dataclass
 class BookService:
     
+    audit_dal:AuditDAL
     book_dal:BookDAL
     book_item_dal:BookItemDAL
     
@@ -58,13 +59,13 @@ class BookService:
         # DOnt allow invalid operation fo data consistency
         status = payload['status']
         current_status = book_item.status
-        
+        print(status,current_status)
         invalid = False
         
         if status == 'lost':
             if audits := await self.audit_dal.get_audits_by_filters(book_item_id=book_item.id, status="assigned"):
                 invalid = True
-        elif current_status != "damaged" or status != 'available':
+        elif not (current_status == BookStatus.DAMAGED and status == 'available'):
             invalid = True
         
         if invalid:

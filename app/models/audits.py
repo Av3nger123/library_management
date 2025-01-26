@@ -30,8 +30,8 @@ class ReturnBook(BaseModel):
         status = values.get('status')
         condition = values.get('condition')
         if status == "lost":
-            values['condition'] = None
-        elif status == 'returned' and condition not in ['good','bad']:
+            values['condition'] = ""
+        elif (status == 'returned' or not status) and condition not in ['good','bad']:
             raise ValueError("Condition can only be 'good' or 'bad'")
         elif status and status not in ['returned','lost'] :
             raise ValueError("Status can only be 'returned' or 'lost'")

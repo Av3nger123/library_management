@@ -43,10 +43,19 @@ class AuditService:
             return "No books available"
     
     async def return_book(self,payload):
+        
+        audit = await self.audit_dal.get_audit(payload['id'])
+        if audit.status == "returned":
+            return "Invalid Operation, Book item is already returned"
         audit_record =  await self.audit_dal.update_audit(payload)
         if not audit_record:
             return "No Audit record found"
-        await self.book_item_dal.change_status(audit_record.book_item_id,status_map.get(payload.get("condition"),BookStatus.AVAILABLE))
+        item_status = "available"
+        if payload['status'] == "lost":
+            item_status = "lost"
+        if payload['condition'] == 'bad':
+            item_status = "damaged"
+        await self.book_item_dal.change_status(audit_record.book_item_id,item_status)
         return audit_record
 
     
