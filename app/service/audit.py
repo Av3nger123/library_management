@@ -43,7 +43,7 @@ class AuditService:
             return "No books available"
     
     async def return_book(self,payload):
-        audit_record =  await self.audit_dal.update_audit({**payload,"status":"returned"})
+        audit_record =  await self.audit_dal.update_audit(payload)
         if not audit_record:
             return "No Audit record found"
         await self.book_item_dal.change_status(audit_record.book_item_id,status_map.get(payload.get("condition"),BookStatus.AVAILABLE))
