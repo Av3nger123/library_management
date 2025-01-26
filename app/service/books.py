@@ -70,6 +70,8 @@ class BookService:
                 invalid = True
             if audits := await self.audit_dal.get_audits_by_filters(book_item_id=book_item.id, status="lost"):
                 invalid = True
+        elif status == "assigned":
+            invalid = True
         
         if invalid:
             return "Invalid Operation"
