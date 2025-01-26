@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, root_validator
 from typing import Optional
 
 class BookStatus(Enum):
@@ -25,9 +25,16 @@ class BookCreate(BookBase):
     pass
 
 class BookUpdate(BaseModel):
-    title: Optional[str] = None
+    name: Optional[str] = None
     author: Optional[str] = None
     publisher: Optional[str] = None
+    
+    @root_validator(pre=True)
+    def check_at_least_one_field(cls, values):
+        if not any(values.values()):
+            raise ValueError("At least one field (name, author, publisher) must be provided")
+        return values
+
     
 class BookItemBase(BaseModel):
     book_id: int
@@ -46,3 +53,5 @@ class BookItemCreate(BookItemBase):
 class BookItemUpdate(BaseModel):
     id: int
     status: str = "available"
+    
+    
