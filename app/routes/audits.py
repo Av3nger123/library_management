@@ -13,11 +13,11 @@ router = APIRouter()
 def get_audit_service():
     return AuditService(UserDAL(),BookDAL(),BookItemDAL(),AuditDAL())
 
-@router.post("/assign")
+@router.post("")
 async def assign_book(request:AssignBook,audit_service:AuditService = Depends(get_audit_service)):
     return await audit_service.assign_book(request.model_dump())
 
-@router.post("/return")
+@router.patch("")
 async def return_book(request:ReturnBook,audit_service:AuditService = Depends(get_audit_service)):
     return await audit_service.return_book(request.model_dump())
 

@@ -12,7 +12,7 @@ class AuditBase(BaseModel):
 class Audit(AuditBase):
     id: int
     book_item_id: int  
-    return_condition: Optional[str] = ""
+    condition: Optional[str] = ""
     created_at: datetime = datetime.now()
     updated_at: datetime = datetime.now()
     
@@ -25,7 +25,7 @@ class AssignBook(AuditBase):
 class ReturnBook(BaseModel):
     id:int
     status: str = "returned"
-    return_condition: str = "good"
+    condition: str = "good"
 
 
 

@@ -14,10 +14,13 @@ def get_book_service():
 async def get_books(book_service: BookService = Depends(get_book_service)):
     return await book_service.get_books()
 
+
+@router.get("/search", response_model=None)
+async def get_book(q: str, book_service: BookService = Depends(get_book_service)):
+    return await book_service.search_books(q)
 @router.get("/{id}", response_model=None)
 async def get_book(id: int, book_service: BookService = Depends(get_book_service)):
     return await book_service.get_book(id)
-
 @router.post("/", response_model=None)
 async def create_books(request: BookCreate, book_service: BookService = Depends(get_book_service)):
     return await book_service.create_book(request.model_dump())
