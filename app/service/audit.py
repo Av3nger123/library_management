@@ -16,6 +16,8 @@ class AuditService:
         user = await self.user_dal.get_user(payload['user_id'])
         if not user:
             return "User not found"
+        if user.is_blocked:
+            return "User is blocked"
         
         book = await self.book_dal.get_book(payload["book_id"])
         if not book:
