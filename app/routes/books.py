@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 
+from app.dal.audit import AuditDAL
 from app.dal.book_item import BookItemDAL
 from app.dal.books import BookDAL
 from app.models.books import BookCreate, BookItemCreate, BookItemUpdate, BookUpdate
@@ -8,7 +9,7 @@ from app.service.books import BookService
 router = APIRouter()
 
 def get_book_service():
-    return BookService(BookDAL(),BookItemDAL())
+    return BookService(AuditDAL(),BookDAL(),BookItemDAL())
 
 
 @router.get("/{id}/items", response_model=None)

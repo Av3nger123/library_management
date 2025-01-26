@@ -39,7 +39,6 @@ class BookUpdate(BaseModel):
 class BookItemBase(BaseModel):
     book_id: int
     status: BookStatus = "available"
-
     
 class BookItem(BookItemBase):
     id:int
@@ -52,6 +51,6 @@ class BookItemCreate(BookItemBase):
 
 class BookItemUpdate(BaseModel):
     id: int
-    status: str = "available"
+    status: str
     
     

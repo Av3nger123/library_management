@@ -1,5 +1,6 @@
 
 from dataclasses import dataclass
+from app.dal.audit import AuditDAL
 from app.dal.book_item import BookItemDAL
 from app.dal.books import BookDAL
 from app.models.books import BookItemCreate
@@ -9,6 +10,7 @@ from app.models.audits import Audit
 @dataclass
 class BookService:
     
+    audit_dal:AuditDAL
     book_dal:BookDAL
     book_item_dal:BookItemDAL
     
@@ -52,6 +54,11 @@ class BookService:
         
     async def update_book_item(self,payload):
         if book_item := await self.book_item_dal.change_status(**payload):
+            if payload['status'] == 'lost':
+                if audits := await self.audit_dal.get_audits_by_filters(book_item_id=book_item.id, status="assigned"):
+                    audit = audits[0]
+                    audit.condition = "lost"
+                    await self.audit_dal.update_audit(audit.model_dump())
             return book_item
         return f"No Book item found for this id: {payload['id']}"
         

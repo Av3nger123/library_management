@@ -23,6 +23,7 @@ class AssignBook(AuditBase):
 
 class ReturnBook(BaseModel):
     id:int
+    status:str = "returned"
     condition: str = "good"
 
 
