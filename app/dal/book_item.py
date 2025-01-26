@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import Dict, List
 
-from app.models.books import BookItem
+from app.models.books import BookItem, BookStatus
 
 
 book_item_records: Dict[int, BookItem] = {}
@@ -31,7 +31,7 @@ class BookItemDAL:
     
     async def change_status(self,book_item_id:int,status:str):
         if book_item := book_item_records[book_item_id]:
-            book_item.status = status
+            book_item.status = BookStatus(status)
             book_item.updated_at = datetime.now()
             book_item_records[book_item_id] = book_item
             return book_item

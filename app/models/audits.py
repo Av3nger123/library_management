@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Optional
-
 from pydantic import BaseModel
 
 class AuditBase(BaseModel):
@@ -24,7 +23,6 @@ class AssignBook(AuditBase):
 
 class ReturnBook(BaseModel):
     id:int
-    status: str = "returned"
     condition: str = "good"
 
 

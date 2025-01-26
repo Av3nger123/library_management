@@ -19,9 +19,10 @@ class BookService:
         return await self.book_dal.search_books(q)
     
     async def get_book(self,book_id):
-        book = await self.book_dal.get_book(book_id)
-        book_items = await self.book_item_dal.get_book_items_for_book(book.id)
-        return {**book.model_dump(),"available_items":book_items}
+        if book := await self.book_dal.get_book(book_id):
+            book_items = await self.book_item_dal.get_book_items_for_book(book.id)
+            return {**book.model_dump(),"available_items":book_items}
+        return "No Book Found"
             
     async def create_book(self,payload:dict):
         book = await self.book_dal.create_book(payload)
@@ -44,5 +45,10 @@ class BookService:
     async def create_book_item(self,payload):
         if book := await self.book_dal.get_book(payload['book_id']):
             return await self.book_item_dal.create_book_item(payload)
+        return f"No Book found for this book_id: {payload['book_id']}"
+        
+    async def update_book_item(self,payload):
+        if book := await self.book_dal.get_book(payload['book_id']):
+            return await self.book_item_dal.change_status(**payload)
         return f"No Book found for this book_id: {payload['book_id']}"
         

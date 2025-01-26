@@ -1,8 +1,15 @@
 
 from dataclasses import dataclass
 from app.dal import user, book_item, books, audit
+from app.models.books import BookStatus
 
 BOOK_LIMIT = 5
+
+status_map = {
+    "good": BookStatus.AVAILABLE,
+    "bad": BookStatus.DAMAGED,
+    "lost": BookStatus.LOST
+}
 
 @dataclass
 class AuditService:
@@ -23,12 +30,13 @@ class AuditService:
         if not book:
             return "Book not found"
         
-        audit_records = await self.audit_dal.get_audits_by_filters(user_id=user.id,status="assigned")
+        audit_records = await self.audit_dal.get_audits_by_filters(user_id=user.id,status=BookStatus.ASSIGNED)
         if len(audit_records) >= BOOK_LIMIT:
             return f"Not allowed as the limit {BOOK_LIMIT} reached"
         
         if book_items := await self.book_item_dal.get_book_items_for_book(book.id):
-            filtered = [item for item in book_items if item.status == 'available']
+            print(book_items)
+            filtered = [item for item in book_items if item.status == BookStatus.AVAILABLE]
         if len(filtered) > 0:
             item = filtered[0]
             await self.book_item_dal.change_status(item.id,"assigned")
@@ -40,7 +48,7 @@ class AuditService:
         audit_record =  await self.audit_dal.update_audit(payload)
         if not audit_record:
             return "No Audit record found"
-        await self.book_item_dal.change_status(audit_record.book_item_id,"available")
+        await self.book_item_dal.change_status(audit_record.book_item_id,status_map.get(payload.get("condition"),BookStatus.AVAILABLE))
         return audit_record
 
     
